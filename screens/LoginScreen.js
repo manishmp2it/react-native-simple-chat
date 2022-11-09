@@ -2,10 +2,12 @@ import { View, Text, StyleSheet, Image, KeyboardAvoidingView } from 'react-nativ
 import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Button, TextInput } from 'react-native-paper';
-import { auth } from '../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+// import { auth } from '../firebase';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginScreen = ({navigation}) => {
+
+  const auth=getAuth();
 const [email,setEmail]=useState("");
 const [password,setPassword]=useState("");
 

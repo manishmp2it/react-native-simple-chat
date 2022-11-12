@@ -5,8 +5,11 @@ import { Button, Text, TextInput } from 'react-native-paper'
 import { auth } from '../firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { updateProfile } from 'firebase/auth'
+import { getAuth } from 'firebase/auth';
 
 const RegisterScreen = ({navigation}) => {
+
+  const auth=getAuth();
 
     const [name,setName]=useState('');
     const [email,setEmail]=useState('');

@@ -4,12 +4,16 @@ import { Avatar, TouchableRipple } from 'react-native-paper'
 import { Text } from 'react-native-paper';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { auth, db } from '../firebase';
+import { db } from '../firebase';
+import { getAuth } from 'firebase/auth';
+
 import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
 
 
 
 const ChatScreen = ({ navigation, route }) => {
+
+    const auth=getAuth();
 
     const [input, setInput] = useState('');
   const [messages,setMessages]=useState([]);
@@ -85,7 +89,7 @@ const ChatScreen = ({ navigation, route }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
             <StatusBar style='light' />
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={Platform.OS === "ios" ? "padding" : "padding"}
                 style={styles.container}
                 keyboardVerticalOffset={90}
             >

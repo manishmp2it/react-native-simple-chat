@@ -1,4 +1,4 @@
-import { Button, FlatList, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import { Alert, Button, FlatList, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useLayoutEffect, useState } from 'react'
 import { Avatar, TouchableRipple } from 'react-native-paper'
 import { Text } from 'react-native-paper';
@@ -22,7 +22,7 @@ const ChatScreen = ({ navigation, route }) => {
     const [startCamera,setStartCamera] = React.useState(false)
 
     const __startCamera = async () => {
-        const {status} = await Camera.requestPermissionsAsync()
+        const {status} = await Camera.requestCameraPermissionsAsync()
         if (status === 'granted') {
           // start the camera
           setStartCamera(true)
@@ -36,6 +36,7 @@ const ChatScreen = ({ navigation, route }) => {
         navigation.setOptions({
             title: 'Chat',
             headerBackTitleVisible: false,
+            headerShown: startCamera ? false : true,
             headerTitleAlign: "left",
             headerTitle: () => (
                 <View
@@ -65,7 +66,7 @@ const ChatScreen = ({ navigation, route }) => {
             )
         })
 
-    }, [messages])
+    }, [messages,startCamera])
 
     const sendMessage = async () => {
         if (input != '') {

@@ -1,24 +1,37 @@
-import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { Button, FlatList, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useLayoutEffect, useState } from 'react'
 import { Avatar, TouchableRipple } from 'react-native-paper'
 import { Text } from 'react-native-paper';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { db } from '../firebase';
 import { getAuth } from 'firebase/auth';
-
+import { Camera, CameraType } from 'expo-camera';
 import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
+// import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 
 
 const ChatScreen = ({ navigation, route }) => {
 
-    const auth=getAuth();
+    const auth = getAuth();
 
     const [input, setInput] = useState('');
-  const [messages,setMessages]=useState([]);
+    const [messages, setMessages] = useState([]);
 
+    const [startCamera,setStartCamera] = React.useState(false)
 
+    const __startCamera = async () => {
+        const {status} = await Camera.requestPermissionsAsync()
+        if (status === 'granted') {
+          // start the camera
+          setStartCamera(true)
+        } else {
+          Alert.alert('Access denied')
+        }
+      }
+
+    
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Chat',
@@ -28,7 +41,7 @@ const ChatScreen = ({ navigation, route }) => {
                 <View
                     style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}
                 >
-                    <Avatar.Image size={30} source={{ uri:messages&& messages[0]?.data.photoURL }} />
+                    <Avatar.Image size={30} source={{ uri: messages && messages[0]?.data.photoURL }} />
                     <Text variant="titleMedium" style={{ color: "white", marginLeft: 10, fontWeight: "700" }}>{route.params.chatName}</Text>
                 </View>
             ),
@@ -55,82 +68,92 @@ const ChatScreen = ({ navigation, route }) => {
     }, [messages])
 
     const sendMessage = async () => {
-        Keyboard.dismiss();
-        const docref=collection(db,`chats`,`${route.params.id}`,'messages')
-        await addDoc(docref, {
-                    timestamp:serverTimestamp(),
-                    message:input,
-                    displayName:auth.currentUser.displayName,
-                    email:auth.currentUser.email,
-                    photoURL:auth.currentUser.photoURL
-                  }
+        if (input != '') {
+            Keyboard.dismiss();
+            let mess = "";
+            mess = input;
+            setInput("");
+            const docref = collection(db, `chats`, `${route.params.id}`, 'messages')
+            await addDoc(docref, {
+                timestamp: serverTimestamp(),
+                message: mess,
+                displayName: auth.currentUser.displayName,
+                email: auth.currentUser.email,
+                photoURL: auth.currentUser.photoURL
+            }
             );
+        }
+    }
 
-        setInput("");
-      }
+    useLayoutEffect(() => {
+        const q = query(collection(db, `chats/${route.params.id}/messages`), orderBy("timestamp", "desc"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
 
-      useLayoutEffect(()=>{
-        const q = query(collection(db, `chats/${route.params.id}/messages`),orderBy("timestamp","desc"));
-        const unsubscribe = onSnapshot(q,(snapshot) => {
-
-              setMessages(snapshot.docs.map(doc => ({
+            setMessages(snapshot.docs.map(doc => ({
                 id: doc.id,
                 data: doc.data()
-              })))
-            },
+            })))
+        },
             (error) => {
-              alert(error);
-            });  
+                alert(error);
+            });
 
         return unsubscribe;
-      },[route])
+    }, [route])
+
+    const renderItem = ({ item }) => (
+        item && item.data.email === auth.currentUser.email ? (
+            <View style={styles.reciever}>
+                <Avatar.Image style={styles.avatarReciever} size={25} source={{ uri: item.data.photoURL }} />
+                <Text style={styles.recieverText}>{item.data.message}</Text>
+            </View>
+
+        ) : (
+            <View style={styles.sender}>
+                <Avatar.Image style={styles.avatarSender} size={25} source={{ uri: item.data.photoURL }} />
+                <Text style={styles.senderText}>{item.data.message}</Text>
+                <Text style={styles.senderName}>{item.data.displayName}</Text>
+            </View>
+        )
+    )
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-            <StatusBar style='light' />
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "padding"}
+            {/* <StatusBar style='light' /> */}
+            {startCamera ? <Camera
+          style={{flex: 1,width:"100%"}}
+          ref={(r) => {
+            camera = r
+          }}
+        ></Camera>:<KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.container}
-                keyboardVerticalOffset={90}
+                keyboardVerticalOffset={130}
             >
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-
-               
-                <>
-                    <ScrollView contentContainerStyle={{padding:15}}>
-                    {messages.map(({id,data})=>(
-                        data.email===auth.currentUser.email ? (
-                            <View key={id} style={styles.reciever}>
-                               <Avatar.Image style={styles.avatarReciever} size={25} source={{ uri: data.photoURL }} />
-                               <Text style={styles.recieverText}>{data.message}</Text>
-                            </View>
-                            
-                        ):(
-                            <View key={id} style={styles.sender}>
-                                <Avatar.Image style={styles.avatarSender} size={25} source={{ uri: data.photoURL }} />
-                               <Text style={styles.senderText}>{data.message}</Text>
-                               <Text style={styles.senderName}>{data.displayName}</Text>
-                            </View>
-                        )
-                    ))}
-                    </ScrollView>
-                    <View style={styles.footer}>
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder='Signal message' value={input}
-
-                            // left={<TextInput.Icon icon="chat" />}
-                            onSubmitEditing={sendMessage}
-                            onChangeText={(text) => setInput(text)}
-                        />
-                        <TouchableRipple onPress={sendMessage}
-                            rippleColor="rgba(0, 0, 0, .32)">
-                            <Ionicons name="send" size={24} color="#2B6BE6" />
-                        </TouchableRipple>
-                    </View>
-                </>
-                </TouchableWithoutFeedback>
-            </KeyboardAvoidingView>
+                <FlatList
+                    data={messages}
+                    renderItem={renderItem}
+                    inverted
+                    keyExtractor={item => item.id}
+                    scroll
+                />
+                <View style={styles.footer}>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder='Signal message' value={input}
+                        onSubmitEditing={sendMessage}
+                        onChangeText={setInput}
+                    />
+                    <TouchableOpacity onPress={__startCamera}>
+                        <Feather name="camera" size={24} color="#595959" style={styles.icon} />
+                    </TouchableOpacity>
+                    <MaterialCommunityIcons name="microphone-outline" size={24} color="#595959" style={styles.icon} />
+                    <TouchableRipple onPress={sendMessage}
+                        rippleColor="rgba(0, 0, 0, .32)">
+                        <Ionicons name="send" size={24} color="#2B6BE6" />
+                    </TouchableRipple>
+                </View>
+            </KeyboardAvoidingView>}
 
         </SafeAreaView>
     )
@@ -142,57 +165,61 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    avatarReciever:{
-        position:"absolute",
-        right:-5,
-        bottom:-15,
+    avatarReciever: {
+        position: "absolute",
+        right: -5,
+        bottom: -15,
     },
-    avatarSender:{
-        position:"absolute",
-        left:-5,
-        bottom:-15,
+    avatarSender: {
+        position: "absolute",
+        left: -5,
+        bottom: -15,
     },
-    reciever:{
-        padding:15,
-        backgroundColor:"#ECECEC",
+    reciever: {
+        padding: 15,
+        backgroundColor: "#ECECEC",
         alignSelf: "flex-end",
-        borderRadius:20,
-        marginRight:15,
-        marginBottom:20,
-        maxWidth:"80%",
-        position:"relative"
+        borderRadius: 20,
+        marginRight: 15,
+        marginBottom: 20,
+        maxWidth: "80%",
+        position: "relative"
     },
-    sender:{
-        padding:15,
-        backgroundColor:"#2B6BE6",
-        alignSelf:"flex-start",
-        borderRadius:20,
-        margin:15,
-        maxWidth:"80%",
-        position:"relative"
+    sender: {
+        padding: 15,
+        backgroundColor: "#2B6BE6",
+        alignSelf: "flex-start",
+        borderRadius: 20,
+        margin: 15,
+        maxWidth: "80%",
+        position: "relative"
     },
-    senderText:{
-        color:"white",
-        fontWeight:"500",
-        marginLeft:10,
-        marginBottom:15
+    senderText: {
+        color: "white",
+        fontWeight: "500",
+        marginLeft: 10,
+        marginBottom: 15
     },
-    recieverText:{
-        color:"black",
-        fontWeight:"500",
-        marginLeft:10,
+    recieverText: {
+        color: "black",
+        fontWeight: "500",
+        marginLeft: 10,
     },
-    senderName:{
-        left:10,
-        paddingRight:10,
-        fontSize:10,
-        color:"white"
+    senderName: {
+        left: 10,
+        paddingRight: 10,
+        fontSize: 10,
+        color: "white"
     },
     footer: {
         flexDirection: "row",
         alignItems: "center",
         width: "100%",
         padding: 15,
+        // backgroundColor: "#f2f2f2",
+    },
+    icon: {
+        marginHorizontal: 5
     },
     textInput: {
         bottom: 0,

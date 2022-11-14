@@ -14,6 +14,8 @@ const HomeScreen = ({ navigation }) => {
 
   const [chats, setChats] = useState([]);
 
+  console.log(chats);
+
   const signOutUser = () => {
     auth.signOut().then(() => {
       navigation.replace("Login")

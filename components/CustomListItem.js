@@ -7,6 +7,7 @@ import { db } from '../firebase';
 const CustomListItem = ({ id, chatName, enterChat }) => {
 
   const [chatMessages, setChatMessages] = useState([]);
+  // console.log(chatMessages)
 
   useEffect(() => {
     const q = query(collection(db, `chats/${id}/messages`), orderBy("timestamp", "desc"));
@@ -23,7 +24,7 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
 
   return (
     <View>
-      {chatMessages!=null && chatMessages!=undefined && chatMessages.length>0 ? <List.Item
+      {chatMessages!=null && chatMessages!=undefined && chatMessages ? <List.Item
         onPress={() => enterChat(id, chatName)}
         key={id}
         title={chatName}

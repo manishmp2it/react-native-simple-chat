@@ -126,7 +126,10 @@ const ChatScreen = ({ navigation, route }) => {
           ref={(r) => {
             camera = r
           }}
-        ></Camera>:<KeyboardAvoidingView
+        >
+
+            
+        </Camera>:<KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.container}
                 keyboardVerticalOffset={130}
@@ -135,6 +138,7 @@ const ChatScreen = ({ navigation, route }) => {
                     data={messages}
                     renderItem={renderItem}
                     inverted
+                    
                     keyExtractor={item => item.id}
                     scroll
                 />

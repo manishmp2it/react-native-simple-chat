@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import CustomListItem from '../components/CustomListItem'
 import { Avatar, Divider } from 'react-native-paper'
@@ -79,6 +79,7 @@ const HomeScreen = ({ navigation }) => {
         )):<View></View>}
 
       </ScrollView>
+      
     </SafeAreaView>
   )
 }

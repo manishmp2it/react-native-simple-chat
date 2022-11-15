@@ -11,26 +11,26 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
-const globalScreenOptions={
-  headerStyle:{backgroundColor:'#2C6BED'},
-  headerTitleStyle:{color:"white"},
-  headerTintColor:"white",
-  headerBackTitleVisible:true
+const globalScreenOptions = {
+  headerStyle: { backgroundColor: '#2C6BED' },
+  headerTitleStyle: { color: "white" },
+  headerTintColor: "white",
+  headerBackTitleVisible: true
 }
 
 export default function App() {
   return (
     <PaperProvider>
-    <NavigationContainer >
-      <Stack.Navigator initialRouteName='Login' screenOptions={globalScreenOptions}>
-        <Stack.Screen name='Login'component={LoginScreen} options={{title:"Login"}}/>
-        <Stack.Screen name='Register' component={RegisterScreen} options={{headerBackTitleVisible:true,headerBackTitle:"Login"}}/>
-        <Stack.Screen name='Home' component={HomeScreen} />
-        <Stack.Screen name='AddChat' component={AddChatScreen} options={{headerBackTitleVisible:true,headerBackTitle:"Login"}}/>
-        <Stack.Screen name='Chat' component={ChatScreen} />
-        
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer >
+        <Stack.Navigator initialRouteName='Login' screenOptions={globalScreenOptions}>
+          <Stack.Screen name='Login' component={LoginScreen} options={{ title: "Login" }} />
+          <Stack.Screen name='Register' component={RegisterScreen} options={{ headerBackTitleVisible: true, headerBackTitle: "Login" }} />
+          <Stack.Screen name='Home' component={HomeScreen} />
+          <Stack.Screen name='AddChat' component={AddChatScreen} options={{ headerBackTitleVisible: true, headerBackTitle: "Login" }} />
+          <Stack.Screen name='Chat' component={ChatScreen} />
+
+        </Stack.Navigator>
+      </NavigationContainer>
     </PaperProvider>
   );
 }
@@ -43,3 +43,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// eas build -p android --profile preview

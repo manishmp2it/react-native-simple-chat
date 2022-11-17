@@ -8,7 +8,7 @@ import { db } from '../firebase';
 import { getAuth } from 'firebase/auth';
 import { Camera, CameraType } from 'expo-camera';
 import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
-// import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import * as ImagePicker from 'expo-image-picker';
 
 
 
@@ -18,6 +18,8 @@ const ChatScreen = ({ navigation, route }) => {
 
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([]);
+    const [image, setImage] = useState(null);
+
 
     const [startCamera,setStartCamera] = React.useState(false)
 
@@ -127,8 +129,6 @@ const ChatScreen = ({ navigation, route }) => {
             camera = r
           }}
         >
-
-            
         </Camera>:<KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.container}

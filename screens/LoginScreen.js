@@ -8,8 +8,8 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 const LoginScreen = ({navigation}) => {
 
   const auth=getAuth();
-const [email,setEmail]=useState("");
-const [password,setPassword]=useState("");
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
 
 
 useEffect(()=>{

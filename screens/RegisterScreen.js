@@ -7,6 +7,9 @@ import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { updateProfile } from 'firebase/auth'
 import { getAuth } from 'firebase/auth';
 import * as ImagePicker from 'expo-image-picker';
+import { getStorage, ref, uploadBytes, uploadString,getDownloadURL } from "firebase/storage";
+import * as FileSystem from 'expo-file-system';
+
 
 const RegisterScreen = ({ navigation }) => {
 
@@ -40,29 +43,40 @@ const RegisterScreen = ({ navigation }) => {
 
   }, [navigation])
 
+
+
   const register = () => {
-    createUserWithEmailAndPassword(auth, email, password).then((authUser) => {
+    createUserWithEmailAndPassword(auth, email, password).then(async (authUser) => {
 
-      updateProfile(authUser.user, {
+
+      const storage = getStorage();
+
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const storageRef = ref(storage, `profile-${authUser&& authUser.user && authUser.user.email}`);
+
+      await uploadBytes(storageRef, blob,).then((snapshot) => {
+       
+        
+      }).catch(error => alert(error.message));
+      const downloadUrl =await getDownloadURL(storageRef);
+      console.log(downloadUrl)
+
+      await updateProfile(authUser.user, {
         displayName: name,
-        photoURL: imageUrl || "https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200&d=mm&r=g"
-      }).then(alert("saved")).catch(error => alert(error.message));
+        photoURL: downloadUrl || "https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200&d=mm&r=g"
+      }).then(()=>{
+        navigation.replace("Home");
+      }).catch(error => alert(error.message));
 
-      // authUser.user.({
-      //   displayName:name,
-      //   photoURL:imageUrl || "https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200&d=mm&r=g"
-      // })
     }).catch(error => alert(error.message));
   }
-
-
-  console.log(name);
 
 
   return (
     <KeyboardAvoidingView behavior='padding' style={styles.container} >
       <StatusBar style='auto' />
-      <Text variant="headlineMedium" style={{ marginBottom: 40, textAlign: "left",color:"#2C6BED",fontWeight:"500" }}>Create new account</Text>
+      <Text variant="headlineMedium" style={{ marginBottom: 40, textAlign: "left", color: "#2C6BED", fontWeight: "500" }}>Create new account</Text>
       <View style={styles.avtarmain}>
         <Avatar.Image size={120} source={{ uri: imageUrl }} style />
         <IconButton
@@ -102,7 +116,7 @@ const RegisterScreen = ({ navigation }) => {
           onChangeText={(text) => setPassword(text)}
           right={<TextInput.Icon icon="lock" />}
         />
-        
+
       </View>
       <Button style={styles.button} icon="account" mode='contained' buttonColor='#2C6BED' onPress={register}>Register</Button>
       <View style={{ height: 80 }} />
@@ -132,10 +146,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 5,
     bottom: -15,
-    backgroundColor:"#83858969"
-},
-avtarmain:{
-  marginBottom:20
+    backgroundColor: "#83858969"
+  },
+  avtarmain: {
+    marginBottom: 20
 
-}
+  }
 })

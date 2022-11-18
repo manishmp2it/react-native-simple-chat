@@ -17,7 +17,7 @@ useEffect(()=>{
 
     console.log(authUser)
       if(authUser){
-        navigation.replace("Home");
+        // navigation.replace("Home");
       }
     })
 

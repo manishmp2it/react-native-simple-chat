@@ -53,7 +53,7 @@ const RegisterScreen = ({ navigation }) => {
 
       const response = await fetch(imageUrl);
       const blob = await response.blob();
-      const storageRef = ref(storage, `profile-${authUser&& authUser.user && authUser.user.email}`);
+      const storageRef = ref(storage, `profile/${authUser&& authUser.user && authUser.user.email}`);
 
       await uploadBytes(storageRef, blob,).then((snapshot) => {
        

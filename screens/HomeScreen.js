@@ -7,34 +7,51 @@ import { AntDesign, SimpleLineIcons } from '@expo/vector-icons'
 import { db } from '../firebase'
 import { doc, onSnapshot, getDoc, collection } from "firebase/firestore";
 import { getAuth } from 'firebase/auth'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 const HomeScreen = ({ navigation }) => {
 
-  const auth=getAuth();
+  const auth = getAuth();
 
   const [chats, setChats] = useState([]);
-
-  console.log(chats);
+  const [loading,setLoading]=useState(true);
 
   const signOutUser = () => {
     auth.signOut().then(() => {
       navigation.replace("Login")
     })
   }
+ 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(db, "chats"),
-      (snapshot) => {
-        setChats(snapshot.docs.map(doc => ({
-          id: doc.id,
-          data: doc.data()
-        })))
-      },
-      (error) => {
-        alert(error);
-      });
+    const unsubcribe= auth.onAuthStateChanged((authUser)=>{
+       if(!authUser){
+         navigation.navigate("Login");
+       }
+       else{
+        const unsubscribe = onSnapshot(
+          collection(db, "chats"),
+          (snapshot) => {
 
-    return unsubscribe;
+            if(snapshot.size)
+            {
+              setLoading(false);
+            }
+            else{
+              setLoading(false);
+            }
+
+            setChats(snapshot.docs.map(doc => ({
+              id: doc.id,
+              data: doc.data()
+            })))
+          },
+          (error) => {
+            alert(error);
+          });
+       }
+     })
+
+     return unsubcribe;
   }, [])
 
   useLayoutEffect(() => {
@@ -62,32 +79,40 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     })
-  }, [navigation])
+  }, [navigation,auth.currentUser])
 
-  const enterChat=(id,chatName)=>{
-    navigation.navigate('Chat',{
-      id:id,
-      chatName:chatName
+  const enterChat = (id, chatName) => {
+    navigation.navigate('Chat', {
+      id: id,
+      chatName: chatName
     })
   }
 
   return (
     <SafeAreaView>
+      <Spinner
+          visible={loading}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
       <ScrollView style={styles.container}>
-        {chats!=undefined && chats!=null && chats.length>0 ?  chats.map(({ id, data: { chatName } }) => (
-          <CustomListItem key={id} id={id} chatName={chatName} enterChat={enterChat}/>
-        )):<View></View>}
+        {chats != undefined && chats != null && chats.length > 0 ? chats.map(({ id, data: { chatName } }) => (
+          <CustomListItem key={id} id={id} chatName={chatName} enterChat={enterChat} />
+        )) : <View></View>}
 
       </ScrollView>
-      
+
     </SafeAreaView>
   )
 }
 
 export default HomeScreen
 
-const styles=StyleSheet.create({
-  container:{
-    height:"100%"
-  }
+const styles = StyleSheet.create({
+  container: {
+    height: "100%"
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
+  },
 })

@@ -22,13 +22,12 @@ export default function App() {
   return (
     <PaperProvider>
       <NavigationContainer >
-        <Stack.Navigator initialRouteName='Loign' screenOptions={globalScreenOptions}>
+        <Stack.Navigator initialRouteName='Home' screenOptions={globalScreenOptions}>
           <Stack.Screen name='Login' component={LoginScreen} options={{ title: "Login" }} />
           <Stack.Screen name='Register' component={RegisterScreen} options={{ headerShadowVisible: false,headerBackVisible:true, }} />
           <Stack.Screen name='Home' component={HomeScreen} />
           <Stack.Screen name='AddChat' component={AddChatScreen} options={{ headerBackTitleVisible: true, headerBackTitle: "Login" }} />
           <Stack.Screen name='Chat' component={ChatScreen} />
-
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

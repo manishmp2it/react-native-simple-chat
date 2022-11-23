@@ -2,7 +2,7 @@ import { Alert, Button, FlatList, Keyboard, KeyboardAvoidingView, Platform, Safe
 import React, { useLayoutEffect, useState } from 'react'
 import { Avatar, TouchableRipple } from 'react-native-paper'
 import { Text } from 'react-native-paper';
-import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { db } from '../firebase';
 import { getAuth } from 'firebase/auth';
@@ -150,9 +150,10 @@ const ChatScreen = ({ navigation, route }) => {
                         onChangeText={setInput}
                     />
                     <TouchableOpacity onPress={__startCamera}>
-                        <Feather name="camera" size={24} color="#595959" style={styles.icon} />
+                        {/* <Feather name="camera" size={24} color="#595959" style={styles.icon} /> */}
+                        <Entypo name="attachment" size={24} color="#595959" style={styles.icon}/>
                     </TouchableOpacity>
-                    <MaterialCommunityIcons name="microphone-outline" size={24} color="#595959" style={styles.icon} />
+                    <MaterialCommunityIcons name="microphone-outline" size={26} color="#595959" style={styles.icon} />
                     <TouchableRipple onPress={sendMessage}
                         rippleColor="rgba(0, 0, 0, .32)">
                         <Ionicons name="send" size={24} color="#2B6BE6" />

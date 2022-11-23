@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Button, TextInput } from 'react-native-paper';
 // import { auth } from '../firebase';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 const LoginScreen = ({navigation}) => {
 
@@ -11,21 +12,15 @@ const LoginScreen = ({navigation}) => {
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
 
-
-useEffect(()=>{
-   const unsubcribe= auth.onAuthStateChanged((authUser)=>{
-
-    console.log(authUser)
-      if(authUser){
-        // navigation.replace("Home");
-      }
-    })
-
-    return unsubcribe;
-},[])
-
 const signIn=()=>{
-  signInWithEmailAndPassword(auth,email,password).catch((error)=>alert(error))
+  signInWithEmailAndPassword(auth,email,password).then(()=>{
+    navigation.navigate("Home");
+  }).catch((error)=>Dialog.show({
+    type: ALERT_TYPE.DANGER,
+    title: 'Error',
+    textBody: 'Please Enter correct email or password',
+    button: 'close',
+  }))
 }
 
   return (

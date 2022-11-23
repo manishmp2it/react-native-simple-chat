@@ -6,6 +6,8 @@ import { db } from '../firebase';
 
 const CustomListItem = ({ id, chatName, enterChat }) => {
 
+  console.log(chatName);
+
   const [chatMessages, setChatMessages] = useState([]);
   // console.log(chatMessages)
 
@@ -33,7 +35,7 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
         descriptionNumberOfLines={1}
         style={{ backgroundColor: "#fff", }}
         description={`${chatMessages&& chatMessages[0]&&chatMessages[0].displayName}: ${chatMessages&&chatMessages[0]&&chatMessages[0].message}`}
-        left={() => <Avatar.Image size={40} source={{ uri: `${chatMessages&&chatMessages[0]&&chatMessages[0].photoURL}` }} style={{ marginTop:10, marginRight:10 }} />}
+        left={() => <Avatar.Image size={35} source={{ uri: `${chatMessages&&chatMessages[0]&&chatMessages[0].photoURL}` }} style={{ marginTop:10, marginRight:10 }} />}
       />:<View></View>}
       <Divider />
     </View>

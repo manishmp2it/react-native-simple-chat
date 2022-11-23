@@ -9,10 +9,12 @@ import { getAuth } from 'firebase/auth';
 import { Camera, CameraType } from 'expo-camera';
 import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
+import { FlashList } from '@shopify/flash-list';
 
 
 
 const ChatScreen = ({ navigation, route }) => {
+    
 
     const auth = getAuth();
 
@@ -45,7 +47,7 @@ const ChatScreen = ({ navigation, route }) => {
                     style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}
                 >
                     <Avatar.Image size={30} source={{ uri: messages && messages[0]?.data.photoURL }} />
-                    <Text variant="titleMedium" style={{ color: "white", marginLeft: 10, fontWeight: "700" }}>{route.params.chatName}</Text>
+                    <Text variant="titleMedium" style={{ color: "black", marginLeft: 10, fontWeight: "700" }}>{route.params.chatName}</Text>
                 </View>
             ),
             // headerLeft:()=>(
@@ -132,15 +134,14 @@ const ChatScreen = ({ navigation, route }) => {
         </Camera>:<KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.container}
-                keyboardVerticalOffset={130}
+                keyboardVerticalOffset={90}
             >
-                <FlatList
+                <FlashList
                     data={messages}
                     renderItem={renderItem}
                     inverted
-                    
-                    keyExtractor={item => item.id}
-                    scroll
+                    keyExtractor={item => item.id}  
+                    estimatedItemSize={100}                  
                 />
                 <View style={styles.footer}>
                     <TextInput
@@ -148,10 +149,13 @@ const ChatScreen = ({ navigation, route }) => {
                         placeholder='Signal message' value={input}
                         onSubmitEditing={sendMessage}
                         onChangeText={setInput}
+                        selectionColor="#55565736"
+                        cursorColor='black'
+                        
                     />
                     <TouchableOpacity onPress={__startCamera}>
                         {/* <Feather name="camera" size={24} color="#595959" style={styles.icon} /> */}
-                        <Entypo name="attachment" size={24} color="#595959" style={styles.icon}/>
+                        <Entypo name="attachment" size={22} color="#595959" style={styles.icon}/>
                     </TouchableOpacity>
                     <MaterialCommunityIcons name="microphone-outline" size={26} color="#595959" style={styles.icon} />
                     <TouchableRipple onPress={sendMessage}
@@ -235,6 +239,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#ECECEC",
         padding: 10,
         color: "grey",
-        borderRadius: 30
+        borderRadius: 30,
+        tintColor:"black"
+        
     }
 })

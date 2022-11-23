@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, Image, KeyboardAvoidingView } from 'react-native'
+import { View, Text, StyleSheet, Image, KeyboardAvoidingView, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { Button, TextInput } from 'react-native-paper';
 // import { auth } from '../firebase';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+// import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 const LoginScreen = ({navigation}) => {
 
@@ -15,17 +15,12 @@ const LoginScreen = ({navigation}) => {
 const signIn=()=>{
   signInWithEmailAndPassword(auth,email,password).then(()=>{
     navigation.navigate("Home");
-  }).catch((error)=>Dialog.show({
-    type: ALERT_TYPE.DANGER,
-    title: 'Error',
-    textBody: 'Please Enter correct email or password',
-    button: 'close',
-  }))
+  }).catch((error)=>Alert.alert("Please enter correct email or password"))
 }
 
   return (
     <KeyboardAvoidingView behavior='padding' style={styles.container}>
-      <StatusBar style='light' />
+      <StatusBar style='auto' />
       <Image source={{ uri: "https://seeklogo.com/images/S/signal-logo-20A1616F60-seeklogo.com.png" }} style={{ width: 200, height: 200 }} />
       <View>
         <TextInput

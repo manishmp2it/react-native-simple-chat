@@ -8,35 +8,37 @@ import { db } from '../firebase'
 import { doc, onSnapshot, getDoc, collection } from "firebase/firestore";
 import { getAuth } from 'firebase/auth'
 import Spinner from 'react-native-loading-spinner-overlay'
+import { FlashList } from '@shopify/flash-list'
 
 const HomeScreen = ({ navigation }) => {
 
   const auth = getAuth();
 
   const [chats, setChats] = useState([]);
-  const [loading,setLoading]=useState(true);
+  const [loading, setLoading] = useState(true);
 
   const signOutUser = () => {
     auth.signOut().then(() => {
       navigation.replace("Login")
     })
   }
- 
+
   useEffect(() => {
-    const unsubcribe= auth.onAuthStateChanged((authUser)=>{
-       if(!authUser){
-         navigation.navigate("Login");
-       }
-       else{
+    const unsubcribe = auth.onAuthStateChanged((authUser) => {
+      if (!authUser) {
+        navigation.replace("Login");
+      }
+      else {
         const unsubscribe = onSnapshot(
           collection(db, "chats"),
           (snapshot) => {
 
-            if(snapshot.size)
-            {
+            console.log(snapshot.size)
+
+            if (snapshot.size) {
               setLoading(false);
             }
-            else{
+            else {
               setLoading(false);
             }
 
@@ -48,10 +50,10 @@ const HomeScreen = ({ navigation }) => {
           (error) => {
             alert(error);
           });
-       }
-     })
+      }
+    })
 
-     return unsubcribe;
+    return unsubcribe;
   }, [])
 
   useLayoutEffect(() => {
@@ -60,8 +62,8 @@ const HomeScreen = ({ navigation }) => {
       headerStyle: { backgroundColor: "#fff" },
       headerTitleStyle: { color: "black" },
       headerTintColor: "black",
-      headerLeft: () => <View style={{ marginLeft: 20 }}>
-        <TouchableOpacity onPress={signOutUser} activeOpacity={0.5}>
+      headerLeft: () => <View style={{ marginLeft: 10 }}>
+        <TouchableOpacity onPress={signOutUser} activeOpacity={0.5} style={{marginRight:15}}>
           <Avatar.Image size={30} source={{ uri: auth?.currentUser?.photoURL }} />
         </TouchableOpacity>
       </View>,
@@ -79,9 +81,10 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     })
-  }, [navigation,auth.currentUser])
+  }, [navigation, auth.currentUser])
 
   const enterChat = (id, chatName) => {
+    console.log(id)
     navigation.navigate('Chat', {
       id: id,
       chatName: chatName
@@ -91,16 +94,20 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
-      <ScrollView style={styles.container}>
-        {chats != undefined && chats != null && chats.length > 0 ? chats.map(({ id, data: { chatName } }) => (
-          <CustomListItem key={id} id={id} chatName={chatName} enterChat={enterChat} />
-        )) : <View></View>}
-
-      </ScrollView>
+        visible={loading}
+        textContent={'Loading...'}
+        textStyle={styles.spinnerTextStyle}
+      />
+     <View style={styles.container}>
+     <FlashList
+        data={chats}
+        renderItem={({item})=>(
+          <CustomListItem id={item.id} chatName={item.data.chatName} enterChat={enterChat} />
+        )}
+        keyExtractor={item => item.id}
+        estimatedItemSize={84}
+      />
+     </View>
 
     </SafeAreaView>
   )
@@ -113,6 +120,7 @@ const styles = StyleSheet.create({
     height: "100%"
   },
   spinnerTextStyle: {
+    marginTop:10,
     color: '#FFF'
   },
 })

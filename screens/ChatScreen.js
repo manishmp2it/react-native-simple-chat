@@ -14,7 +14,7 @@ import { FlashList } from '@shopify/flash-list';
 
 
 const ChatScreen = ({ navigation, route }) => {
-    
+
 
     const auth = getAuth();
 
@@ -23,19 +23,19 @@ const ChatScreen = ({ navigation, route }) => {
     const [image, setImage] = useState(null);
 
 
-    const [startCamera,setStartCamera] = React.useState(false)
+    const [startCamera, setStartCamera] = React.useState(false)
 
     const __startCamera = async () => {
-        const {status} = await Camera.requestCameraPermissionsAsync()
+        const { status } = await Camera.requestCameraPermissionsAsync()
         if (status === 'granted') {
-          // start the camera
-          setStartCamera(true)
+            // start the camera
+            setStartCamera(true)
         } else {
-          Alert.alert('Access denied')
+            Alert.alert('Access denied')
         }
-      }
+    }
 
-    
+
     useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Chat',
@@ -70,7 +70,7 @@ const ChatScreen = ({ navigation, route }) => {
             )
         })
 
-    }, [messages,startCamera])
+    }, [messages, startCamera])
 
     const sendMessage = async () => {
         if (input != '') {
@@ -126,22 +126,22 @@ const ChatScreen = ({ navigation, route }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
             {/* <StatusBar style='light' /> */}
             {startCamera ? <Camera
-          style={{flex: 1,width:"100%"}}
-          ref={(r) => {
-            camera = r
-          }}
-        >
-        </Camera>:<KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1, width: "100%" }}
+                ref={(r) => {
+                    camera = r
+                }}
+            >
+            </Camera> : <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
                 style={styles.container}
-                keyboardVerticalOffset={90}
+                // keyboardVerticalOffset={90}
             >
                 <FlashList
                     data={messages}
                     renderItem={renderItem}
                     inverted
-                    keyExtractor={item => item.id}  
-                    estimatedItemSize={100}                  
+                    keyExtractor={item => item.id}
+                    estimatedItemSize={100}
                 />
                 <View style={styles.footer}>
                     <TextInput
@@ -151,11 +151,11 @@ const ChatScreen = ({ navigation, route }) => {
                         onChangeText={setInput}
                         selectionColor="#55565736"
                         cursorColor='black'
-                        
+
                     />
                     <TouchableOpacity onPress={__startCamera}>
                         {/* <Feather name="camera" size={24} color="#595959" style={styles.icon} /> */}
-                        <Entypo name="attachment" size={22} color="#595959" style={styles.icon}/>
+                        <Entypo name="attachment" size={22} color="#595959" style={styles.icon} />
                     </TouchableOpacity>
                     <MaterialCommunityIcons name="microphone-outline" size={26} color="#595959" style={styles.icon} />
                     <TouchableRipple onPress={sendMessage}
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
         padding: 10,
         color: "grey",
         borderRadius: 30,
-        tintColor:"black"
-        
+        tintColor: "black"
+
     }
 })
